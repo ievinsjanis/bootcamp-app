@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import SuiteModal from '../components/SuiteModal';
 import AddCasesModal from '../components/AddCasesModal';
 import './SuiteDetailPage.css';
@@ -20,7 +20,8 @@ const SUITE_STATUS_STYLES = {
 };
 
 export default function SuiteDetailPage() {
-  const { id } = useParams();
+  const { id }     = useParams();
+  const navigate   = useNavigate();
   const [suite, setSuite]             = useState(null);
   const [loading, setLoading]         = useState(true);
   const [fetchError, setFetchError]   = useState('');
@@ -29,6 +30,8 @@ export default function SuiteDetailPage() {
   const [addOpen, setAddOpen]         = useState(false);
   const [dragging, setDragging]       = useState(null);
   const [dragOver, setDragOver]       = useState(null);
+  const [creatingRun, setCreatingRun] = useState(false);
+  const [runError, setRunError]       = useState('');
 
   async function fetchSuite() {
     setLoading(true);
@@ -46,6 +49,25 @@ export default function SuiteDetailPage() {
   }
 
   useEffect(() => { fetchSuite(); }, [id]);
+
+  async function handleNewRun() {
+    setCreatingRun(true);
+    setRunError('');
+    try {
+      const res  = await fetch('/api/test-runs', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ suite_id: parseInt(id) }),
+      });
+      const json = await res.json();
+      if (json.success) navigate(`/test-runs/${json.data.id}`);
+      else setRunError(json.error || 'Failed to create run.');
+    } catch {
+      setRunError('Failed to create run — check your connection.');
+    } finally {
+      setCreatingRun(false);
+    }
+  }
 
   async function handleRemoveCase(caseId) {
     if (!confirm('Remove this test case from the suite?')) return;
@@ -168,7 +190,17 @@ export default function SuiteDetailPage() {
         )}
       </div>
 
+      {runError && <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.5rem' }}>{runError}</p>}
+
       <div className="sdp-footer">
+        <button
+          className="btn-secondary sdp-edit-btn"
+          onClick={handleNewRun}
+          disabled={creatingRun || cases.length === 0}
+          title={cases.length === 0 ? 'Add cases before starting a run' : 'Start a new test run'}
+        >
+          {creatingRun ? 'Creating…' : '▶ New Run'}
+        </button>
         <button className="btn-primary" onClick={() => setAddOpen(true)}>+ Add Case</button>
       </div>
 

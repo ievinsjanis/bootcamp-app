@@ -137,7 +137,9 @@
 .sdp-footer {
   margin-top: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sdp-loading {

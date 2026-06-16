@@ -189,4 +189,126 @@ if (bugCount.count === 0) {
   insertActivity.run(b3.lastInsertRowid, 'status_change', 'in-progress', 'resolved', 'Fix deployed — 2 MB limit enforced client-side and server-side');
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS test_runs_v2 (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    suite_id INTEGER NOT NULL,
+    suite_name TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'running' CHECK(status IN ('running','completed','aborted')),
+    pass_count INTEGER NOT NULL DEFAULT 0,
+    fail_count INTEGER NOT NULL DEFAULT 0,
+    skip_count INTEGER NOT NULL DEFAULT 0,
+    start_time TEXT NOT NULL DEFAULT (datetime('now')),
+    end_time TEXT,
+    created_by TEXT NOT NULL DEFAULT 'anonymous',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS test_run_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id INTEGER NOT NULL,
+    test_case_id INTEGER NOT NULL,
+    test_case_title TEXT NOT NULL,
+    result TEXT CHECK(result IN ('passed','failed','skipped')),
+    duration_ms INTEGER,
+    notes TEXT,
+    failed_at TEXT,
+    github_issue_url TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+const runCount = db.prepare('SELECT COUNT(*) as count FROM test_runs_v2').get();
+if (runCount.count === 0) {
+  const suite1 = db.prepare('SELECT * FROM suites WHERE id = 1').get();
+  if (suite1) {
+    const cases = db.prepare(`
+      SELECT tc.id, tc.title
+      FROM suite_cases sc
+      JOIN test_cases tc ON tc.id = sc.test_case_id
+      WHERE sc.suite_id = 1
+      ORDER BY sc.sort_order ASC
+    `).all();
+    if (cases.length >= 2) {
+      const insertRun = db.prepare(`
+        INSERT INTO test_runs_v2
+          (suite_id, suite_name, status, pass_count, fail_count, skip_count, start_time, end_time, created_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      const insertResult = db.prepare(`
+        INSERT INTO test_run_results (run_id, test_case_id, test_case_title, result, notes, failed_at, github_issue_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+      const passCount = 1;
+      const failCount = 1;
+      const skipCount = cases.length >= 3 ? 1 : 0;
+      const seedRun = insertRun.run(
+        1, 'Login Smoke Tests', 'completed', passCount, failCount, skipCount,
+        '2026-06-15 09:00:00', '2026-06-15 09:12:34', 'anonymous'
+      );
+      const runId = seedRun.lastInsertRowid;
+      insertResult.run(runId, cases[0].id, cases[0].title, 'passed', null, null, null);
+      insertResult.run(runId, cases[1].id, cases[1].title, 'failed',
+        'Error message does not appear after a failed login attempt.',
+        '2026-06-15 09:08:22',
+        'https://github.com/ievinsjanis/bootcamp-app/issues/3'
+      );
+      if (cases[2]) {
+        insertResult.run(runId, cases[2].id, cases[2].title, 'skipped',
+          'Blocked by authentication issue — revisit after bug #1 is resolved.',
+          null, null
+        );
+      }
+    }
+  }
+}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS reports (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id        INTEGER NOT NULL,
+    suite_name    TEXT    NOT NULL,
+    run_date      TEXT    NOT NULL,
+    total_count   INTEGER NOT NULL DEFAULT 0,
+    passed_count  INTEGER NOT NULL DEFAULT 0,
+    failed_count  INTEGER NOT NULL DEFAULT 0,
+    skipped_count INTEGER NOT NULL DEFAULT 0,
+    results       TEXT    NOT NULL DEFAULT '[]',
+    generated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+const reportCount = db.prepare('SELECT COUNT(*) as count FROM reports').get();
+if (reportCount.count === 0) {
+  const seedRun = db.prepare(
+    "SELECT * FROM test_runs_v2 WHERE status = 'completed' ORDER BY id ASC LIMIT 1"
+  ).get();
+  if (seedRun) {
+    const seedResults = db.prepare(`
+      SELECT trr.*, tc.severity, tc.expected_result
+      FROM test_run_results trr
+      LEFT JOIN test_cases tc ON tc.id = trr.test_case_id
+      WHERE trr.run_id = ?
+      ORDER BY trr.id ASC
+    `).all(seedRun.id);
+    db.prepare(`
+      INSERT INTO reports
+        (run_id, suite_name, run_date, total_count, passed_count, failed_count, skipped_count, results)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      seedRun.id,
+      seedRun.suite_name,
+      seedRun.start_time,
+      seedResults.length,
+      seedResults.filter(r => r.result === 'passed').length,
+      seedResults.filter(r => r.result === 'failed').length,
+      seedResults.filter(r => r.result === 'skipped').length,
+      JSON.stringify(seedResults)
+    );
+  }
+}
+
 module.exports = db;

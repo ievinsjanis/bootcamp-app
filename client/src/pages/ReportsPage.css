@@ -1,0 +1,142 @@
+.rp {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.rp-header {
+  margin-bottom: 1.75rem;
+}
+
+.rp-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.rp-status {
+  color: #9ca3af;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.rp-error { color: #dc2626; }
+
+/* ── Empty state */
+
+.rp-empty {
+  margin-top: 1rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.rp-empty-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.rp-empty-body {
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+.rp-empty-body a {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* ── Table */
+
+.rp-table-wrap {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.rp-table thead { background: #f9fafb; }
+
+.rp-table th {
+  padding: 0.7rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.rp-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.rp-table tr:last-child td { border-bottom: none; }
+
+.rp-link {
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+.rp-link:hover { text-decoration: underline; }
+
+.rp-suite { font-weight: 500; }
+
+.rp-rate {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #1a1a2e;
+}
+
+.rp-counts { font-variant-numeric: tabular-nums; }
+.rp-pass   { color: #166534; font-weight: 600; }
+.rp-fail   { color: #991b1b; font-weight: 600; }
+.rp-skip   { color: #475569; }
+
+.rp-when {
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ── Action buttons in table */
+
+.rp-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.rp-view-btn,
+.rp-dl-btn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 5px;
+  text-decoration: none;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.rp-view-btn:hover,
+.rp-dl-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111;
+}

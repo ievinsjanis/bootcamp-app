@@ -1,0 +1,84 @@
+.trp {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.trp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.trp-header h1 { font-size: 1.5rem; font-weight: 700; }
+
+.trp-table-wrap {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.trp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.trp-table thead { background: #f9fafb; }
+
+.trp-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.trp-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.trp-table tr:last-child td { border-bottom: none; }
+
+.trp-table a { color: #1a1a2e; text-decoration: none; font-weight: 500; }
+.trp-table a:hover { text-decoration: underline; }
+
+.trp-id { width: 50px; color: #6b7280; font-size: 0.8rem; }
+
+.trp-th-count { width: 60px; text-align: center; }
+.trp-count    { text-align: center; font-weight: 600; }
+.trp-pass     { color: #166534; }
+.trp-fail     { color: #991b1b; }
+.trp-skip     { color: #6b7280; }
+
+.trp-dur  { color: #6b7280; font-size: 0.8rem; }
+.trp-date { color: #6b7280; font-size: 0.8rem; white-space: nowrap; }
+
+.trp-empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem;
+  font-size: 0.875rem;
+}
+
+.trp-error { color: #991b1b !important; }
+
+.trp-count-line {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+  text-align: right;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}

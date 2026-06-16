@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-response-shape.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-severity-enum.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-todo-ticket.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
