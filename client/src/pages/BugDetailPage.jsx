@@ -123,6 +123,16 @@ export default function BugDetailPage() {
           <span className="bdp-date">Updated {formatDate(bug.updated_at)}</span>
         </div>
         <div className="bdp-header-actions">
+          {bug.github_issue_url && (
+            <a
+              className="btn-secondary bdp-btn-sm bdp-gh-link"
+              href={bug.github_issue_url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ↗ GitHub Issue
+            </a>
+          )}
           <button className="btn-secondary bdp-btn-sm" onClick={() => setEditOpen(true)}>Edit</button>
           <button className="btn-danger    bdp-btn-sm" onClick={handleDelete}>Delete</button>
         </div>

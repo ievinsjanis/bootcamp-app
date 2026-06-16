@@ -140,6 +140,8 @@ db.exec(`
   )
 `);
 
+try { db.exec(`ALTER TABLE bugs ADD COLUMN github_issue_url TEXT`); } catch {}
+
 const bugCount = db.prepare('SELECT COUNT(*) as count FROM bugs').get();
 if (bugCount.count === 0) {
   const insertBug = db.prepare(`

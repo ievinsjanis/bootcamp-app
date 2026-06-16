@@ -96,7 +96,7 @@ function handleUpdateBug(req, res) {
     const existing = db.prepare('SELECT * FROM bugs WHERE id = ?').get(req.params.id);
     if (!existing) return res.status(404).json({ success: false, data: null, error: 'Bug not found' });
 
-    const { title, description, severity, steps_to_reproduce, expected, actual, environment } = req.body;
+    const { title, description, severity, steps_to_reproduce, expected, actual, environment, github_issue_url } = req.body;
 
     if (title !== undefined && !title.trim()) {
       return res.status(400).json({ success: false, data: null, error: 'title cannot be empty.' });
@@ -114,18 +114,20 @@ function handleUpdateBug(req, res) {
         expected           = ?,
         actual             = ?,
         environment        = ?,
+        github_issue_url   = ?,
         updated_at         = datetime('now')
       WHERE id = ?
     `).run(
-      title !== undefined       ? title.trim()             : existing.title,
-      description !== undefined ? (description || null)    : existing.description,
-      severity !== undefined    ? severity                  : existing.severity,
+      title !== undefined            ? title.trim()                  : existing.title,
+      description !== undefined      ? (description || null)         : existing.description,
+      severity !== undefined         ? severity                       : existing.severity,
       steps_to_reproduce !== undefined
         ? (steps_to_reproduce ? JSON.stringify(steps_to_reproduce) : null)
         : existing.steps_to_reproduce,
-      expected    !== undefined ? (expected    || null)    : existing.expected,
-      actual      !== undefined ? (actual      || null)    : existing.actual,
-      environment !== undefined ? (environment || null)    : existing.environment,
+      expected          !== undefined ? (expected    || null)        : existing.expected,
+      actual            !== undefined ? (actual      || null)        : existing.actual,
+      environment       !== undefined ? (environment || null)        : existing.environment,
+      github_issue_url  !== undefined ? (github_issue_url || null)   : existing.github_issue_url,
       req.params.id
     );
 
