@@ -1,0 +1,55 @@
+.acm-body { gap: 0.5rem; }
+
+.acm-empty {
+  color: #9ca3af;
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.875rem;
+}
+
+.acm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.acm-row:hover { background: #f3f4f6; }
+
+.acm-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.acm-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 340px;
+}
+
+.acm-badge { flex-shrink: 0; }
+
+.btn-add {
+  flex-shrink: 0;
+  background: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-add:hover { background: #2d2d4e; }
