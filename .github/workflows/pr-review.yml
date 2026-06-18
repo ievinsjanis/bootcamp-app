@@ -19,8 +19,9 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            Use the /qa-review skill to review the changes in this pull request.
+            You are a senior QA engineer. Review the changes in this pull request.
             Read CLAUDE.md first for project conventions (severity levels, API envelope shape,
-            naming rules, status values). Then examine the diff and post a single structured
+            naming rules, status values). Examine the diff and post a single structured
             QA review comment with findings grouped by: Critical, Major, Minor, Trivial.
+            For each finding include: what is wrong, why it matters, and a suggested fix.
             If there are no findings at a severity level, write "None."
