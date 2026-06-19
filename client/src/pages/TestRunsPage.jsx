@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './TestRunsPage.css';
 
-const STATUS_STYLES = {
-  running:   { background: '#dbeafe', color: '#1e40af' },
-  completed: { background: '#dcfce7', color: '#166534' },
-  aborted:   { background: '#fee2e2', color: '#991b1b' },
-};
-
 function formatDate(str) {
   if (!str) return '—';
   return new Date(str + 'Z').toLocaleDateString('en-GB', {
@@ -29,7 +23,7 @@ export default function TestRunsPage() {
   const [loading, setLoading]   = useState(true);
   const [fetchError, setFetchError] = useState('');
 
-  useEffect(() => {
+  function fetchRuns() {
     setLoading(true);
     setFetchError('');
     fetch('/api/test-runs')
@@ -40,7 +34,9 @@ export default function TestRunsPage() {
       })
       .catch(() => setFetchError('Failed to load runs — check your connection and refresh.'))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { fetchRuns(); }, []);
 
   return (
     <div className="trp">
@@ -48,51 +44,67 @@ export default function TestRunsPage() {
         <h1>Test Runs</h1>
       </div>
 
-      <div className="trp-table-wrap">
-        <table className="trp-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Suite</th>
-              <th>Status</th>
-              <th className="trp-th-count">Pass</th>
-              <th className="trp-th-count">Fail</th>
-              <th className="trp-th-count">Skip</th>
-              <th>Duration</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr><td colSpan={8} className="trp-empty">Loading…</td></tr>
-            )}
-            {!loading && fetchError && (
-              <tr><td colSpan={8} className="trp-empty trp-error">{fetchError}</td></tr>
-            )}
-            {!loading && !fetchError && runs.length === 0 && (
-              <tr><td colSpan={8} className="trp-empty">No test runs yet. Start one from a suite.</td></tr>
-            )}
-            {!loading && !fetchError && runs.map(run => (
-              <tr key={run.id}>
-                <td className="trp-id">
-                  <Link to={`/test-runs/${run.id}`}>#{run.id}</Link>
-                </td>
-                <td className="trp-suite">
-                  <Link to={`/test-runs/${run.id}`}>{run.suite_name}</Link>
-                </td>
-                <td>
-                  <span className="badge" style={STATUS_STYLES[run.status]}>{run.status}</span>
-                </td>
-                <td className="trp-count trp-pass">{run.pass_count}</td>
-                <td className="trp-count trp-fail">{run.fail_count}</td>
-                <td className="trp-count trp-skip">{run.skip_count}</td>
-                <td className="trp-dur">{duration(run.start_time, run.end_time)}</td>
-                <td className="trp-date">{formatDate(run.created_at)}</td>
+      {fetchError && (
+        <div className="error-banner--page">
+          <p>{fetchError}</p>
+          <button className="btn-primary" onClick={fetchRuns}>Retry</button>
+        </div>
+      )}
+
+      {!fetchError && (
+        <div className="table-wrap">
+          <table className="data-table trp-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Suite</th>
+                <th>Status</th>
+                <th className="trp-th-count">Pass</th>
+                <th className="trp-th-count">Fail</th>
+                <th className="trp-th-count">Skip</th>
+                <th>Duration</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {loading && Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--text" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                </tr>
+              ))}
+              {!loading && runs.length === 0 && (
+                <tr><td colSpan={8} className="trp-empty">No test runs yet. Start one from a suite.</td></tr>
+              )}
+              {!loading && runs.map(run => (
+                <tr key={run.id}>
+                  <td className="trp-id">
+                    <Link to={`/test-runs/${run.id}`}>#{run.id}</Link>
+                  </td>
+                  <td className="trp-suite">
+                    <Link to={`/test-runs/${run.id}`}>{run.suite_name}</Link>
+                  </td>
+                  <td>
+                    <span className={`badge badge--${run.status}`}>{run.status}</span>
+                  </td>
+                  <td className="trp-count trp-pass">{run.pass_count}</td>
+                  <td className="trp-count trp-fail">{run.fail_count}</td>
+                  <td className="trp-count trp-skip">{run.skip_count}</td>
+                  <td className="trp-dur">{duration(run.start_time, run.end_time)}</td>
+                  <td className="trp-date">{formatDate(run.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <p className="trp-count-line">{runs.length} run{runs.length !== 1 ? 's' : ''}</p>
     </div>
   );

@@ -1,84 +1,59 @@
 .trp {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: var(--sp-8) var(--sp-6);
+}
+
+@media (max-width: 600px) {
+  .trp { padding: var(--sp-6) var(--sp-4); }
 }
 
 .trp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-6);
 }
 
-.trp-header h1 { font-size: 1.5rem; font-weight: 700; }
-
-.trp-table-wrap {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
+.trp-header h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--c-text);
 }
 
-.trp-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
+/* ── Cell helpers ────────────────────────────────────────────── */
+
+/* table-wrap and data-table come from shared.css */
+
+.trp-table a {
+  color: var(--c-text);
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.trp-table thead { background: #f9fafb; }
+.trp-table a:hover { text-decoration: underline; color: var(--c-accent); }
 
-.trp-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.trp-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-}
-
-.trp-table tr:last-child td { border-bottom: none; }
-
-.trp-table a { color: #1a1a2e; text-decoration: none; font-weight: 500; }
-.trp-table a:hover { text-decoration: underline; }
-
-.trp-id { width: 50px; color: #6b7280; font-size: 0.8rem; }
+.trp-id { width: 50px; color: var(--c-text-ghost); font-size: 0.8rem; }
 
 .trp-th-count { width: 60px; text-align: center; }
 .trp-count    { text-align: center; font-weight: 600; }
-.trp-pass     { color: #166534; }
-.trp-fail     { color: #991b1b; }
-.trp-skip     { color: #6b7280; }
+.trp-pass     { color: var(--c-success-text); }
+.trp-fail     { color: var(--c-danger-text);  }
+.trp-skip     { color: var(--c-text-muted);   }
 
-.trp-dur  { color: #6b7280; font-size: 0.8rem; }
-.trp-date { color: #6b7280; font-size: 0.8rem; white-space: nowrap; }
+.trp-dur  { color: var(--c-text-muted); font-size: 0.8rem; }
+.trp-date { color: var(--c-text-muted); font-size: 0.8rem; white-space: nowrap; }
 
 .trp-empty {
   text-align: center;
-  color: #9ca3af;
-  padding: 3rem;
-  font-size: 0.875rem;
+  color: var(--c-text-ghost);
+  padding: var(--sp-12);
+  font-size: var(--text-sm);
 }
-
-.trp-error { color: #991b1b !important; }
 
 .trp-count-line {
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--c-text-ghost);
   margin-top: 0.75rem;
   text-align: right;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
 }
