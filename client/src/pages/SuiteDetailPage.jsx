@@ -4,20 +4,6 @@ import SuiteModal from '../components/SuiteModal';
 import AddCasesModal from '../components/AddCasesModal';
 import './SuiteDetailPage.css';
 
-const SEVERITY_STYLES = {
-  Critical: { background: '#fee2e2', color: '#991b1b' },
-  Major:    { background: '#ffedd5', color: '#9a3412' },
-  Minor:    { background: '#fef9c3', color: '#854d0e' },
-  Trivial:  { background: '#f1f5f9', color: '#475569' },
-};
-
-const SUITE_STATUS_STYLES = {
-  'draft':       { background: '#f1f5f9', color: '#475569' },
-  'ready':       { background: '#dbeafe', color: '#1e40af' },
-  'in-progress': { background: '#ffedd5', color: '#9a3412' },
-  'passed':      { background: '#dcfce7', color: '#166534' },
-  'failed':      { background: '#fee2e2', color: '#991b1b' },
-};
 
 export default function SuiteDetailPage() {
   const { id }     = useParams();
@@ -110,19 +96,39 @@ export default function SuiteDetailPage() {
     }
   }
 
-  if (loading)    return <div className="sdp"><p className="sdp-loading">Loading...</p></div>;
-  if (fetchError) return <div className="sdp"><p className="sdp-loading">{fetchError}</p></div>;
+  if (loading) return (
+    <div className="sdp">
+      <div className="skel skel--text" style={{ width: '8rem', marginBottom: 'var(--sp-6)' }} />
+      <div className="sdp-header">
+        <div className="sdp-title-row">
+          <div className="skel skel--num" style={{ width: '18rem' }} />
+        </div>
+        <div className="sdp-meta" style={{ marginTop: 'var(--sp-3)' }}>
+          <div className="skel skel--text" style={{ width: '12rem' }} />
+        </div>
+      </div>
+    </div>
+  );
+  if (fetchError) return (
+    <div className="sdp">
+      <Link to="/test-suites" className="detail-back">← Test Suites</Link>
+      <div className="error-banner--page">
+        <p>{fetchError}</p>
+        <button className="btn-primary" onClick={fetchSuite}>Retry</button>
+      </div>
+    </div>
+  );
 
   const cases = suite.cases ?? [];
 
   return (
     <div className="sdp">
-      <Link to="/test-suites" className="sdp-back">← Test Suites</Link>
+      <Link to="/test-suites" className="detail-back">← Test Suites</Link>
 
       <div className="sdp-header">
         <div className="sdp-title-row">
-          <h1>{suite.name}</h1>
-          <span className="badge sdp-status-badge" style={SUITE_STATUS_STYLES[suite.status]}>
+          <h1 className="detail-title">{suite.name}</h1>
+          <span className={`badge badge--${suite.status.replace(' ', '-')} sdp-status-badge`}>
             {suite.status}
           </span>
         </div>
@@ -135,11 +141,11 @@ export default function SuiteDetailPage() {
 
       {reorderError && <p className="sdp-reorder-err">{reorderError}</p>}
 
-      <div className="sdp-table-wrap">
+      <div className="table-wrap">
         {cases.length === 0 ? (
           <p className="sdp-empty">No test cases in this suite yet. Add some below.</p>
         ) : (
-          <table className="sdp-table">
+          <table className="data-table sdp-table">
             <thead>
               <tr>
                 <th className="col-drag"></th>
@@ -177,11 +183,13 @@ export default function SuiteDetailPage() {
                   </td>
                   <td className="sdp-tc-title">{tc.title}</td>
                   <td>
-                    <span className="badge" style={SEVERITY_STYLES[tc.severity]}>{tc.severity}</span>
+                    <span className={`badge badge--${tc.severity.toLowerCase()}`}>{tc.severity}</span>
                   </td>
-                  <td><span className="status-chip">{tc.status}</span></td>
                   <td>
-                    <button className="btn-icon btn-del" onClick={() => handleRemoveCase(tc.id)} title="Remove from suite">✕</button>
+                    <span className={`badge badge--${tc.status.toLowerCase()}`}>{tc.status}</span>
+                  </td>
+                  <td>
+                    <button className="btn-icon btn-del" onClick={() => handleRemoveCase(tc.id)} aria-label={`Remove ${tc.title} from suite`}>✕</button>
                   </td>
                 </tr>
               ))}
@@ -190,7 +198,7 @@ export default function SuiteDetailPage() {
         )}
       </div>
 
-      {runError && <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.5rem' }}>{runError}</p>}
+      {runError && <p className="sdp-run-err">{runError}</p>}
 
       <div className="sdp-footer">
         <button
