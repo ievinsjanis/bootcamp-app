@@ -1,97 +1,91 @@
 .bp {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: var(--sp-8) var(--sp-6);
+}
+
+@media (max-width: 600px) {
+  .bp { padding: var(--sp-6) var(--sp-4); }
 }
 
 .bp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+  gap: var(--sp-3);
 }
 
-.bp-header h1 { font-size: 1.5rem; font-weight: 700; }
+.bp-header h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--c-text);
+}
 
 .bp-toolbar {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--sp-4);
   flex-wrap: wrap;
 }
 
 .bp-search {
   flex: 1;
   min-width: 200px;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  background: white;
+  padding: var(--sp-2) 0.75rem;
+  border: 1px solid var(--c-border-2);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  background: var(--c-input-bg);
+  color: var(--c-text);
+  font-family: var(--font-sans);
+}
+
+.bp-search:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: var(--focus-ring);
 }
 
 .bp-filter {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  background: white;
+  padding: var(--sp-2) 0.75rem;
+  border: 1px solid var(--c-border-2);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  background: var(--c-input-bg);
+  color: var(--c-text);
   cursor: pointer;
 }
 
-.bp-table-wrap {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
+.bp-filter:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: var(--focus-ring);
 }
 
-.bp-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
+/* ── Sort headers ────────────────────────────────────────────── */
 
-.bp-table thead { background: #f9fafb; }
+/* table-wrap and data-table come from shared.css */
 
-.bp-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
-}
+.bp-th-sort { cursor: pointer; user-select: none; }
+.bp-th-sort:hover { background: var(--c-surface-3); }
 
-.bp-th-sort {
-  cursor: pointer;
-  user-select: none;
-}
+.bp-sort-icon   { margin-left: 4px; color: var(--c-border-2); font-style: normal; }
+.bp-sort-active { color: var(--c-text); }
 
-.bp-th-sort:hover { color: #1a1a2e; }
-
-.bp-sort-icon       { margin-left: 4px; color: #d1d5db; font-style: normal; }
-.bp-sort-active     { color: #1a1a2e; }
-
-.bp-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-}
-
-.bp-table tr:last-child td { border-bottom: none; }
-.bp-table tbody tr:hover td { background: #fafafa; }
+/* ── Cell helpers ────────────────────────────────────────────── */
 
 .bp-title a {
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--c-text);
   text-decoration: none;
 }
 
-.bp-title a:hover { text-decoration: underline; color: #3b4a9e; }
+.bp-title a:hover { text-decoration: underline; color: var(--c-accent); }
 
-.bp-env  { color: #6b7280; font-size: 0.8rem; }
-.bp-date { color: #6b7280; font-size: 0.8rem; white-space: nowrap; }
+.bp-env  { color: var(--c-text-muted); font-size: 0.8rem; }
+.bp-date { color: var(--c-text-muted); font-size: 0.8rem; white-space: nowrap; }
 
 .bp-actions {
   display: flex;
@@ -99,40 +93,18 @@
   white-space: nowrap;
 }
 
-.btn-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.3rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1;
-}
-
-.btn-icon:hover         { background: #f3f4f6; color: #111; }
-.btn-icon.btn-del:hover { background: #fee2e2; color: #991b1b; }
-
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
+/* ── Empty cell ──────────────────────────────────────────────── */
 
 .bp-empty {
   text-align: center;
-  color: #9ca3af;
-  padding: 3rem;
+  color: var(--c-text-ghost);
+  padding: var(--sp-12);
+  font-size: var(--text-sm);
 }
-
-.bp-error { color: #991b1b; }
 
 .bp-count {
   margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--c-text-ghost);
   text-align: right;
 }
