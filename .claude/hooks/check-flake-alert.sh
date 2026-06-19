@@ -127,7 +127,7 @@ PAYLOAD=$(jq -nc --arg content "$MESSAGE" '{"content":$content}')
 HTTP_STATUS=$(curl -s -o /tmp/discord_resp.json -w "%{http_code}" \
   --max-time 10 \
   -X POST "https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages" \
-  -H "Authorization: Bot ${DISCORD_BOT_TOKEN}" \
+  -H "Authorization: ${DISCORD_BOT_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD" 2>/dev/null) || { echo "DISCORD: curl failed"; exit 0; }
 
