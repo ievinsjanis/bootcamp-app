@@ -25,12 +25,25 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
 
+app.use('/api/search',     require('./routes/search'));
+app.use('/api/settings',   require('./routes/settings'));
 app.use('/api/dashboard',  require('./routes/dashboard'));
 app.use('/api/reports',    require('./routes/reports'));
-app.use('/api/test-cases', require('./routes/test-cases'));
+app.use('/api/test-cases/import', require('./routes/test-case-import'));
+app.use('/api/test-cases',        require('./routes/test-cases'));
 app.use('/api/suites',     require('./routes/suites'));
 app.use('/api/bugs',       require('./routes/bugs'));
 app.use('/api/test-runs',  require('./routes/test-runs'));
+
+// Production: serve the Vite build and let React Router handle all non-API paths.
+// RENDER env var is set automatically by Render on every deployment.
+if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  const distPath = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(distPath));
+  app.get(/^(?!\/api).*$/, (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

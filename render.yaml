@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: qa-command-center
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GITHUB_TOKEN
+        sync: false   # optional — set in Render dashboard for issue-URL linking
