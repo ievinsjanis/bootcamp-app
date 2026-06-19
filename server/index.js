@@ -25,6 +25,7 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
 
+app.use('/api/flaky-tests', require('./routes/flaky-tests'));
 app.use('/api/search',     require('./routes/search'));
 app.use('/api/settings',   require('./routes/settings'));
 app.use('/api/dashboard',  require('./routes/dashboard'));
