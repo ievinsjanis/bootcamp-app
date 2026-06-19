@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__github__*",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Read(**)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
