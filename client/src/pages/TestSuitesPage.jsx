@@ -3,14 +3,6 @@ import { Link } from 'react-router-dom';
 import SuiteModal from '../components/SuiteModal';
 import './TestSuitesPage.css';
 
-const SUITE_STATUS_STYLES = {
-  'draft':       { background: '#f1f5f9', color: '#475569' },
-  'ready':       { background: '#dbeafe', color: '#1e40af' },
-  'in-progress': { background: '#ffedd5', color: '#9a3412' },
-  'passed':      { background: '#dcfce7', color: '#166534' },
-  'failed':      { background: '#fee2e2', color: '#991b1b' },
-};
-
 const STATUS_OPTIONS = ['draft', 'ready', 'in-progress', 'passed', 'failed'];
 
 function formatDate(str) {
@@ -21,7 +13,7 @@ function formatDate(str) {
 export default function TestSuitesPage() {
   const [suites, setSuites]         = useState([]);
   const [statusFilter, setStatus]   = useState('');
-  const [loading, setLoading]       = useState(false);
+  const [loading, setLoading]       = useState(true);
   const [fetchError, setFetchError] = useState('');
   const [modalOpen, setModalOpen]   = useState(false);
   const [editing, setEditing]       = useState(null);
@@ -67,14 +59,23 @@ export default function TestSuitesPage() {
           className="tsp-filter"
           value={statusFilter}
           onChange={e => setStatus(e.target.value)}
+          aria-label="Filter by status"
         >
           <option value="">All statuses</option>
           {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
-      <div className="tsp-table-wrap">
-        <table className="tsp-table">
+      {fetchError && (
+        <div className="error-banner--page">
+          <p>{fetchError}</p>
+          <button className="btn-primary" onClick={fetchSuites}>Retry</button>
+        </div>
+      )}
+
+      {!fetchError && (
+      <div className="table-wrap">
+        <table className="data-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -86,11 +87,17 @@ export default function TestSuitesPage() {
             </tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan={6} className="tsp-empty">Loading...</td></tr>}
-            {!loading && fetchError && (
-              <tr><td colSpan={6} className="tsp-empty tsp-error">{fetchError}</td></tr>
-            )}
-            {!loading && !fetchError && suites.length === 0 && (
+            {loading && Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i}>
+                <td><div className="skel skel--text" /></td>
+                <td><div className="skel skel--short" /></td>
+                <td><div className="skel skel--short" /></td>
+                <td><div className="skel skel--short" /></td>
+                <td><div className="skel skel--short" /></td>
+                <td />
+              </tr>
+            ))}
+            {!loading && suites.length === 0 && (
               <tr><td colSpan={6} className="tsp-empty">No test suites found.</td></tr>
             )}
             {!loading && suites.map(suite => (
@@ -100,26 +107,27 @@ export default function TestSuitesPage() {
                 </td>
                 <td className="tsp-feature">{suite.feature}</td>
                 <td>
-                  <span className="badge" style={SUITE_STATUS_STYLES[suite.status]}>
+                  <span className={`badge badge--${suite.status.replace(' ', '-')}`}>
                     {suite.status}
                   </span>
                 </td>
                 <td className="tsp-count">{suite.case_count}</td>
                 <td className="tsp-date">{formatDate(suite.updated_at)}</td>
                 <td className="tsp-actions">
-                  <button className="btn-icon" onClick={e => openEdit(suite, e)} title="Edit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <button className="btn-icon" onClick={e => openEdit(suite, e)} aria-label={`Edit ${suite.name}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
                   </button>
-                  <button className="btn-icon btn-del" onClick={e => handleDelete(suite, e)} title="Delete">✕</button>
+                  <button className="btn-icon btn-del" onClick={e => handleDelete(suite, e)} aria-label={`Delete ${suite.name}`}>✕</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      )}
 
       <p className="tsp-count-label">{suites.length} suite{suites.length !== 1 ? 's' : ''}</p>
 
