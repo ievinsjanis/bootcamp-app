@@ -1,0 +1,376 @@
+/* ────────────────────────────────────────────────────────────
+   QA Command Center — Shared Component Styles
+   Used across all pages. All values use CSS variables so
+   dark mode works automatically from tokens.css overrides.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Page shell ──────────────────────────────────────────────── */
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6);
+}
+
+@media (max-width: 600px) {
+  .page { padding: var(--sp-6) var(--sp-4); }
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--c-text);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+  margin-top: var(--sp-1);
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* ── Sections ────────────────────────────────────────────────── */
+
+.section {
+  margin-bottom: var(--sp-8);
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+
+.section-title {
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.section-link {
+  font-size: 0.8rem;
+  color: var(--c-text-muted);
+  text-decoration: none;
+}
+
+.section-link:hover { color: var(--c-text); text-decoration: underline; }
+
+/* ── Cards ───────────────────────────────────────────────────── */
+
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-5) var(--sp-6);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+
+@media (max-width: 700px) {
+  .metric-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+}
+
+.metric-value {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-text);
+  margin-bottom: 0.35rem;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-muted);
+}
+
+.metric-sub {
+  font-size: 0.72rem;
+  color: var(--c-text-ghost);
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Tables ──────────────────────────────────────────────────── */
+
+.table-wrap {
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  overflow-x: auto;
+  background: var(--c-surface);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.data-table thead {
+  background: var(--c-surface-2);
+}
+
+.data-table th {
+  padding: 0.7rem var(--sp-4);
+  text-align: left;
+  font-weight: 600;
+  color: var(--c-text-2);
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.7rem var(--sp-4);
+  border-bottom: 1px solid var(--c-surface-3);
+  color: var(--c-text-2);
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: var(--c-surface-3); }
+
+/* ── Badges ──────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--r-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* Severity */
+.badge--critical { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.badge--major    { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+.badge--minor    { background: var(--c-accent-subtle);  color: var(--c-accent-text);  border-color: var(--c-accent-border); }
+.badge--trivial  { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+
+/* Test case status */
+.badge--draft    { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.badge--ready    { background: var(--c-accent-subtle);  color: var(--c-accent-text);  border-color: var(--c-accent-border); }
+.badge--passed   { background: var(--c-success-subtle); color: var(--c-success-text); border-color: var(--c-success-border); }
+.badge--failed   { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.badge--skipped  { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+
+/* Bug status */
+.badge--open        { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.badge--in-progress { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+.badge--resolved    { background: var(--c-success-subtle); color: var(--c-success-text); border-color: var(--c-success-border); }
+.badge--closed      { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.badge--reopened    { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+
+/* Test run status */
+.badge--running   { background: var(--c-accent-subtle);  color: var(--c-accent-text);  border-color: var(--c-accent-border); }
+.badge--completed { background: var(--c-success-subtle); color: var(--c-success-text); border-color: var(--c-success-border); }
+.badge--aborted   { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+
+/* ── Status chip (small, square-cornered — detail pages) ─────── */
+
+.status-chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--r-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* Inherit badge modifier colors */
+.status-chip.badge--critical { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.status-chip.badge--major    { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+.status-chip.badge--minor    { background: var(--c-accent-subtle);  color: var(--c-accent-text);  border-color: var(--c-accent-border); }
+.status-chip.badge--trivial  { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.status-chip.badge--draft    { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.status-chip.badge--ready    { background: var(--c-accent-subtle);  color: var(--c-accent-text);  border-color: var(--c-accent-border); }
+.status-chip.badge--passed   { background: var(--c-success-subtle); color: var(--c-success-text); border-color: var(--c-success-border); }
+.status-chip.badge--failed   { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.status-chip.badge--skipped  { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.status-chip.badge--open        { background: var(--c-danger-subtle);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.status-chip.badge--in-progress { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+.status-chip.badge--resolved    { background: var(--c-success-subtle); color: var(--c-success-text); border-color: var(--c-success-border); }
+.status-chip.badge--closed      { background: var(--c-surface-3);      color: var(--c-text-muted);   border-color: var(--c-border); }
+.status-chip.badge--reopened    { background: var(--c-warning-subtle); color: var(--c-warning-text); border-color: var(--c-warning-border); }
+
+/* ── Skeleton shimmer ────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skel {
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--c-skel-from) 25%, var(--c-skel-mid) 50%, var(--c-skel-from) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skel--num   { height: 2rem;   width: 60%; }
+.skel--label { height: 0.8rem; width: 80%; }
+.skel--text  { height: 1rem;   width: 90%; }
+.skel--wide  { height: 1rem;   width: 100%; }
+.skel--short { height: 1rem;   width: 40%; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+
+.empty-state {
+  margin-top: var(--sp-4);
+  text-align: center;
+  padding: var(--sp-12) var(--sp-8);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+}
+
+.empty-state__heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: var(--sp-2);
+}
+
+.empty-state__body {
+  font-size: 0.9rem;
+  color: var(--c-text-muted);
+  line-height: 1.7;
+}
+
+.empty-state__body a {
+  color: var(--c-accent-text);
+  text-decoration: underline;
+}
+
+.empty-state__actions {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: center;
+  margin-top: var(--sp-6);
+}
+
+/* ── Error banner ────────────────────────────────────────────── */
+
+.error-banner {
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-danger-subtle);
+  border-left: 3px solid var(--c-danger);
+  border-radius: var(--r-md);
+  color: var(--c-danger-text);
+  font-size: var(--text-sm);
+}
+
+.error-banner--page {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-8);
+  background: var(--c-surface);
+  border: 1px solid var(--c-danger-border);
+  border-left: none;
+  border-radius: var(--r-xl);
+  color: var(--c-danger-text);
+  margin-top: var(--sp-4);
+}
+
+.error-banner--page p {
+  margin-bottom: var(--sp-4);
+  font-size: 0.95rem;
+}
+
+/* ── Icon button ─────────────────────────────────────────────── */
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--r-sm);
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+}
+
+.btn-icon:hover          { background: var(--c-surface-3); color: var(--c-text); }
+.btn-icon.btn-del:hover  { background: var(--c-danger-subtle); color: var(--c-danger-text); }
+.btn-icon:focus-visible  { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+
+/* ── Detail page header ──────────────────────────────────────── */
+
+.detail-back {
+  display: inline-block;
+  color: var(--c-text-muted);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  margin-bottom: var(--sp-6);
+}
+
+.detail-back:hover { color: var(--c-text); }
+
+.detail-header {
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.detail-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--c-text);
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Utilities ───────────────────────────────────────────────── */
+
+.text-mono   { font-family: var(--font-mono); }
+.text-muted  { color: var(--c-text-muted); }
+.text-ghost  { color: var(--c-text-ghost); }
+.text-tabnum { font-variant-numeric: tabular-nums; }
