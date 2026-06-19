@@ -28,12 +28,19 @@ SUCCESS=$(echo "$STDOUT" | jq -re '.success' 2>/dev/null) || exit 0
 [[ "$SUCCESS" == "true" ]] || exit 0
 
 # ── 4. Extract result fields ───────────────────────────────
-RESULT=$(echo "$STDOUT" | jq -re '.data.result' 2>/dev/null) || exit 0
+# PATCH /api/test-runs/:runId/results/:resultId returns the full run object.
+# run_id is at .data.id; the specific result is inside .data.results[].
+RUN_ID=$(echo "$STDOUT" | jq -re '.data.id' 2>/dev/null) || exit 0
+
+# Pull resultId from the end of the URL path
+RESULT_ID=$(echo "$COMMAND" | grep -oE '/results/[0-9]+' | grep -oE '[0-9]+$') || exit 0
+[[ "$RESULT_ID" =~ ^[0-9]+$ ]] || exit 0
+
+TC_ID=$(echo "$STDOUT"  | jq -re ".data.results[] | select(.id == ($RESULT_ID|tonumber)) | .test_case_id" 2>/dev/null) || exit 0
+RESULT=$(echo "$STDOUT" | jq -re ".data.results[] | select(.id == ($RESULT_ID|tonumber)) | .result"       2>/dev/null) || exit 0
+
 [[ "$RESULT" == "skipped" ]] && exit 0
 [[ "$RESULT" == "null"    ]] && exit 0
-
-TC_ID=$(echo "$STDOUT" | jq -re '.data.test_case_id' 2>/dev/null)  || exit 0
-RUN_ID=$(echo "$STDOUT" | jq -re '.data.run_id'      2>/dev/null)  || exit 0
 
 [[ "$TC_ID"  =~ ^[0-9]+$ ]] || exit 0
 [[ "$RUN_ID" =~ ^[0-9]+$ ]] || exit 0
