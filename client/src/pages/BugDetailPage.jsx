@@ -3,22 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import BugModal from '../components/BugModal';
 import './BugDetailPage.css';
 
-const SEV_STYLES = {
-  Critical: { background: '#fee2e2', color: '#991b1b' },
-  Major:    { background: '#ffedd5', color: '#9a3412' },
-  Minor:    { background: '#fef9c3', color: '#854d0e' },
-  Trivial:  { background: '#f1f5f9', color: '#475569' },
-};
-
-const STATUS_STYLES = {
-  'open':        { background: '#fee2e2', color: '#991b1b' },
-  'in-progress': { background: '#ffedd5', color: '#9a3412' },
-  'resolved':    { background: '#dcfce7', color: '#166534' },
-  'closed':      { background: '#f1f5f9', color: '#475569' },
-  'reopened':    { background: '#f3e8ff', color: '#7e22ce' },
-};
-
-
 function formatDate(str) {
   if (!str) return '—';
   return new Date(str + 'Z').toLocaleString('en-GB', {
@@ -101,23 +85,45 @@ export default function BugDetailPage() {
     }
   }
 
-  if (loading)    return <div className="bdp"><p className="bdp-loading">Loading…</p></div>;
-  if (fetchError) return <div className="bdp"><p className="bdp-loading">{fetchError}</p></div>;
+  if (loading) return (
+    <div className="bdp">
+      <div className="skel skel--text" style={{ width: '5rem', marginBottom: 'var(--sp-6)' }} />
+      <div className="bdp-header">
+        <div className="bdp-title-row">
+          <div className="skel skel--num" style={{ width: '20rem', flex: 1 }} />
+        </div>
+        <div className="bdp-meta" style={{ marginTop: 'var(--sp-3)' }}>
+          <div className="skel skel--short" style={{ width: '5rem' }} />
+          <div className="skel skel--short" style={{ width: '8rem' }} />
+        </div>
+      </div>
+    </div>
+  );
+
+  if (fetchError) return (
+    <div className="bdp">
+      <Link to="/bugs" className="detail-back">← Bugs</Link>
+      <div className="error-banner--page">
+        <p>{fetchError}</p>
+        <button className="btn-primary" onClick={fetchBug}>Retry</button>
+      </div>
+    </div>
+  );
 
   const steps      = parseSteps(bug.steps_to_reproduce);
   const nextStates = bug.next_statuses ?? [];
 
   return (
     <div className="bdp">
-      <Link to="/bugs" className="bdp-back">← Bugs</Link>
+      <Link to="/bugs" className="detail-back">← Bugs</Link>
 
       <div className="bdp-header">
         <div className="bdp-title-row">
-          <h1>{bug.title}</h1>
-          <span className="badge" style={STATUS_STYLES[bug.status]}>{bug.status}</span>
+          <h1 className="detail-title">{bug.title}</h1>
+          <span className={`badge badge--${bug.status}`}>{bug.status}</span>
         </div>
         <div className="bdp-meta">
-          <span className="badge" style={SEV_STYLES[bug.severity]}>{bug.severity}</span>
+          <span className={`badge badge--${bug.severity.toLowerCase()}`}>{bug.severity}</span>
           {bug.environment && <span className="bdp-env">{bug.environment}</span>}
           <span className="bdp-date">Filed {formatDate(bug.created_at)}</span>
           <span className="bdp-date">Updated {formatDate(bug.updated_at)}</span>
@@ -225,11 +231,11 @@ export default function BugDetailPage() {
                       {entry.action === 'status_change' ? (
                         entry.old_value
                           ? <>
-                              <span className="status-chip" style={STATUS_STYLES[entry.old_value]}>{entry.old_value}</span>
+                              <span className={`badge badge--${entry.old_value}`}>{entry.old_value}</span>
                               {' → '}
-                              <span className="status-chip" style={STATUS_STYLES[entry.new_value]}>{entry.new_value}</span>
+                              <span className={`badge badge--${entry.new_value}`}>{entry.new_value}</span>
                             </>
-                          : <>Opened as <span className="status-chip" style={STATUS_STYLES[entry.new_value]}>{entry.new_value}</span></>
+                          : <>Opened as <span className={`badge badge--${entry.new_value}`}>{entry.new_value}</span></>
                       ) : (
                         entry.message
                       )}
