@@ -1,0 +1,33 @@
+{
+  "name": "qa-command-center",
+  "version": "1.0.0",
+  "description": "QA toolkit for structured test-case generation, feature review, transcript summarization, standards enforcement, and flaky-test analysis. Built for the QA Command Center bootcamp app.",
+  "author": "Janis Ievins",
+  "license": "MIT",
+  "repository": "https://github.com/ievinsjanis/bootcamp-app",
+  "commands": [
+    ".claude/commands/new-test.md",
+    ".claude/commands/bug-report.md",
+    ".claude/commands/ticket-checklist.md"
+  ],
+  "skills": [
+    ".claude/skills/test-generator/SKILL.md",
+    ".claude/skills/qa-review/SKILL.md",
+    ".claude/skills/transcript-summarizer/SKILL.md"
+  ],
+  "agents": [
+    ".claude/agents/test-writer.md",
+    ".claude/agents/qa-reviewer.md",
+    ".claude/agents/transcript-summarizer.md",
+    ".claude/agents/flake-analyzer.md"
+  ],
+  "hooks": {
+    "config": ".claude/hooks/hooks-settings.json",
+    "files": [
+      ".claude/hooks/check-response-shape.sh",
+      ".claude/hooks/check-severity-enum.sh",
+      ".claude/hooks/check-flake-alert.sh",
+      ".claude/hooks/check-todo-ticket.sh"
+    ]
+  }
+}

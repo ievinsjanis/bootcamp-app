@@ -1,0 +1,39 @@
+{
+  "_comment": "Portable hook settings fragment for the qa-command-center plugin. Merge the 'hooks' key into your .claude/settings.json to install all four hooks. Paths are relative to the repository root and require no absolute paths or secrets.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-response-shape.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-severity-enum.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-flake-alert.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-todo-ticket.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
