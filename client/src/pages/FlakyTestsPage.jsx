@@ -43,16 +43,19 @@ function insightNote(tests) {
 }
 
 function ScoreMeter({ score }) {
-  const pct   = Math.min((score / 1.5) * 100, 100);
-  const color = score > 0.9
-    ? 'var(--c-danger)'
+  const pct       = Math.min((score / 1.5) * 100, 100);
+  const fillClass = score > 0.9
+    ? 'ft-score-bar-fill--high'
     : score >= 0.5
-    ? 'var(--c-warning)'
-    : 'var(--c-accent)';
+    ? 'ft-score-bar-fill--mid'
+    : 'ft-score-bar-fill--low';
 
   return (
     <div className="ft-score-wrap">
-      <span className="ft-score-num">{score.toFixed(3)}</span>
+      <div className="ft-score-num-row">
+        <span className="ft-score-num">{score.toFixed(3)}</span>
+        <span className="ft-score-unit">/ 1.5</span>
+      </div>
       <div
         className="ft-score-bar-track"
         role="meter"
@@ -62,8 +65,8 @@ function ScoreMeter({ score }) {
         aria-label={`Flakiness score ${score.toFixed(3)} out of 1.5`}
       >
         <div
-          className="ft-score-bar-fill"
-          style={{ width: `${pct}%`, background: color }}
+          className={`ft-score-bar-fill ${fillClass}`}
+          style={{ width: `${pct}%` }}
         />
       </div>
     </div>
@@ -118,7 +121,7 @@ function SkeletonRow() {
   return (
     <tr>
       {[20, 200, 80, 100, 110, 140].map((w, i) => (
-        <td key={i}><div className="ft-skel ft-skel-text" style={{ width: w }} /></td>
+        <td key={i}><div className="skel skel--text" style={{ width: w }} /></td>
       ))}
     </tr>
   );
@@ -173,8 +176,8 @@ export default function FlakyTestsPage() {
         <div className="ft-metrics-grid">
           {[0, 1, 2, 3].map(i => (
             <div key={i} className="ft-metric-card ft-skeleton-card">
-              <div className="ft-skel ft-skel-num" />
-              <div className="ft-skel ft-skel-label" />
+              <div className="skel skel--num" />
+              <div className="skel skel--label" />
             </div>
           ))}
         </div>
@@ -195,8 +198,8 @@ export default function FlakyTestsPage() {
         <div className="ft-header">
           <h1 className="ft-title">Flaky Tests</h1>
         </div>
-        <div className="ft-error">
-          <p className="ft-error-msg">{fetchError}</p>
+        <div className="error-banner--page">
+          <p>{fetchError}</p>
           <button className="btn-primary" onClick={fetchTests}>Retry</button>
         </div>
       </div>
@@ -209,13 +212,11 @@ export default function FlakyTestsPage() {
         <div className="ft-header">
           <h1 className="ft-title">Flaky Tests</h1>
         </div>
-        <div className="ft-empty">
-          <p className="ft-empty-heading">No flaky tests found.</p>
-          <p className="ft-empty-body">
+        <div className="empty-state">
+          <p className="empty-state__heading">No flaky tests found.</p>
+          <p className="empty-state__body">
             All test cases with 3 or more eligible runs have consistent results.
-          </p>
-          <p className="ft-empty-body">
-            This is good. Run more test cycles to continue tracking reliability.
+            Run more test cycles to continue tracking reliability.
           </p>
         </div>
       </div>
@@ -248,8 +249,9 @@ export default function FlakyTestsPage() {
               className="ft-analyze-btn"
               onClick={handleCopyPrompt}
               aria-label="Copy analyze flaky tests prompt to clipboard"
+              title="Copy 'analyze flaky tests' command to clipboard"
             >
-              {copied ? 'Copied!' : 'Analyze ↗'}
+              {copied ? 'Copied ✓' : 'Analyze ↗'}
             </button>
             {copied && (
               <span className="ft-analyze-tip" role="status">
@@ -272,7 +274,7 @@ export default function FlakyTestsPage() {
 
       {note && (
         <div className="ft-insight" role="note">
-          <p>{note}</p>
+          <p><span className="ft-insight-icon" aria-hidden="true">ℹ</span>{note}</p>
         </div>
       )}
 
