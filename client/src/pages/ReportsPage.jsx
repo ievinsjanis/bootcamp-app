@@ -18,32 +18,40 @@ function passRate(row) {
 export default function ReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [fetchError, setFetchError] = useState('');
 
-  useEffect(() => {
+  function fetchReports() {
+    setLoading(true);
+    setFetchError('');
     fetch('/api/reports')
       .then(r => r.json())
       .then(json => {
         if (json.success) setReports(json.data);
-        else setError(json.error || 'Failed to load reports.');
+        else setFetchError(json.error || 'Failed to load reports.');
       })
-      .catch(() => setError('Could not reach the server.'))
+      .catch(() => setFetchError('Could not reach the server.'))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { fetchReports(); }, []);
 
   return (
     <div className="rp">
       <div className="rp-header">
-        <h1 className="rp-title">Reports</h1>
+        <h1>Reports</h1>
       </div>
 
-      {loading && <p className="rp-status">Loading…</p>}
-      {error   && <p className="rp-status rp-error">{error}</p>}
+      {fetchError && (
+        <div className="error-banner--page">
+          <p>{fetchError}</p>
+          <button className="btn-primary" onClick={fetchReports}>Retry</button>
+        </div>
+      )}
 
-      {!loading && !error && reports.length === 0 && (
-        <div className="rp-empty">
-          <p className="rp-empty-heading">No reports yet.</p>
-          <p className="rp-empty-body">
+      {!fetchError && !loading && reports.length === 0 && (
+        <div className="empty-state">
+          <p className="empty-state__heading">No reports yet.</p>
+          <p className="empty-state__body">
             Open a completed{' '}
             <Link to="/test-runs">test run</Link> and click{' '}
             <strong>Generate report</strong> to create your first report.
@@ -51,9 +59,9 @@ export default function ReportsPage() {
         </div>
       )}
 
-      {!loading && !error && reports.length > 0 && (
-        <div className="rp-table-wrap">
-          <table className="rp-table">
+      {!fetchError && (loading || reports.length > 0) && (
+        <div className="table-wrap">
+          <table className="data-table rp-table">
             <thead>
               <tr>
                 <th>#</th>
@@ -66,7 +74,18 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {reports.map(r => (
+              {loading && Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--text" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td><div className="skel skel--short" /></td>
+                  <td />
+                </tr>
+              ))}
+              {!loading && reports.map(r => (
                 <tr key={r.id}>
                   <td>
                     <Link to={`/reports/${r.id}`} className="rp-link">#{r.id}</Link>
