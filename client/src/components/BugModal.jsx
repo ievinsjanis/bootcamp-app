@@ -8,12 +8,12 @@ function parseSteps(raw) {
   try { return JSON.parse(raw).join('\n'); } catch { return raw; }
 }
 
-export default function BugModal({ bug, onClose, onSaved }) {
+export default function BugModal({ bug, defaultSeverity = 'Critical', onClose, onSaved }) {
   const isEdit = !!bug;
   const [form, setForm] = useState({
     title:              bug?.title              ?? '',
     description:        bug?.description        ?? '',
-    severity:           bug?.severity           ?? 'Critical',
+    severity:           bug?.severity           ?? defaultSeverity,
     environment:        bug?.environment        ?? '',
     steps_to_reproduce: parseSteps(bug?.steps_to_reproduce),
     expected:           bug?.expected           ?? '',
@@ -60,21 +60,22 @@ export default function BugModal({ bug, onClose, onSaved }) {
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && !saving && onClose()}>
-      <div className="modal" style={{ maxWidth: '640px' }}>
+      <div className="modal modal--wide" role="dialog" aria-labelledby="bug-modal-title">
         <div className="modal-head">
-          <h2>{isEdit ? 'Edit Bug' : 'New Bug'}</h2>
-          <button className="modal-x" onClick={onClose} disabled={saving}>✕</button>
+          <h2 id="bug-modal-title">{isEdit ? 'Edit Bug' : 'New Bug'}</h2>
+          <button className="modal-x" onClick={onClose} disabled={saving} aria-label="Close dialog">✕</button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
             <label>
-              <span>Title <em className="req">*</em></span>
+              <span>Title <em className="req" aria-hidden="true">*</em></span>
               <input
                 type="text"
                 value={form.title}
                 onChange={e => set('title', e.target.value)}
                 placeholder="[FeatureArea] short description of what is broken"
+                aria-required="true"
               />
             </label>
 
@@ -90,8 +91,8 @@ export default function BugModal({ bug, onClose, onSaved }) {
 
             <div className="modal-row">
               <label>
-                <span>Severity <em className="req">*</em></span>
-                <select value={form.severity} onChange={e => set('severity', e.target.value)}>
+                <span>Severity <em className="req" aria-hidden="true">*</em></span>
+                <select value={form.severity} onChange={e => set('severity', e.target.value)} aria-required="true">
                   {SEVERITIES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </label>
@@ -137,7 +138,7 @@ export default function BugModal({ bug, onClose, onSaved }) {
               </label>
             </div>
 
-            {error && <p className="modal-err">{error}</p>}
+            {error && <p className="modal-err" role="alert">{error}</p>}
           </div>
 
           <div className="modal-foot">

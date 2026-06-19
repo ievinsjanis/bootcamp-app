@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import '../components/TestCaseModal.css';
 import './AddCasesModal.css';
 
-const SEVERITY_STYLES = {
-  Critical: { background: '#fee2e2', color: '#991b1b' },
-  Major:    { background: '#ffedd5', color: '#9a3412' },
-  Minor:    { background: '#fef9c3', color: '#854d0e' },
-  Trivial:  { background: '#f1f5f9', color: '#475569' },
-};
 
 export default function AddCasesModal({ suiteId, existingCaseIds, onClose, onAdded }) {
   const [allCases, setAllCases] = useState([]);
@@ -38,10 +32,10 @@ export default function AddCasesModal({ suiteId, existingCaseIds, onClose, onAdd
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal">
+      <div className="modal" role="dialog" aria-labelledby="add-cases-modal-title">
         <div className="modal-head">
-          <h2>Add Test Cases</h2>
-          <button className="modal-x" onClick={onClose}>✕</button>
+          <h2 id="add-cases-modal-title">Add Test Cases</h2>
+          <button className="modal-x" onClick={onClose} aria-label="Close dialog">✕</button>
         </div>
 
         <div className="modal-body acm-body">
@@ -53,7 +47,7 @@ export default function AddCasesModal({ suiteId, existingCaseIds, onClose, onAdd
             <div key={tc.id} className="acm-row">
               <div className="acm-info">
                 <span className="acm-title">{tc.title}</span>
-                <span className="badge acm-badge" style={SEVERITY_STYLES[tc.severity]}>{tc.severity}</span>
+                <span className={`badge badge--${tc.severity.toLowerCase()} acm-badge`}>{tc.severity}</span>
               </div>
               <button className="btn-add" onClick={() => handleAdd(tc)}>+ Add</button>
             </div>
