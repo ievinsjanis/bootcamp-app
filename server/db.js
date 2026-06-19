@@ -311,4 +311,101 @@ if (reportCount.count === 0) {
   }
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS user_preferences (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    theme TEXT NOT NULL DEFAULT 'system' CHECK(theme IN ('light','dark','system')),
+    default_severity TEXT NOT NULL DEFAULT 'Minor' CHECK(default_severity IN ('Critical','Major','Minor','Trivial')),
+    default_page_size INTEGER NOT NULL DEFAULT 20 CHECK(default_page_size IN (10,20,50,100)),
+    timezone TEXT NOT NULL DEFAULT 'UTC',
+    auto_generate_report INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+const prefCount = db.prepare('SELECT COUNT(*) as count FROM user_preferences').get();
+if (prefCount.count === 0) {
+  db.prepare(
+    `INSERT INTO user_preferences (id, theme, default_severity, default_page_size, timezone, auto_generate_report)
+     VALUES (1, 'system', 'Minor', 20, 'UTC', 1)`
+  ).run();
+}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS flake_hypotheses (
+    test_case_id      INTEGER PRIMARY KEY,
+    hypothesis        TEXT,
+    flakiness_score   REAL,
+    eligible_runs     INTEGER,
+    fail_count        INTEGER,
+    transitions       INTEGER,
+    last_alert_run_id INTEGER,
+    updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+// Seed historical pass/fail data the first time the flake_hypotheses table is created
+// and the test_run_results table has fewer than 10 rows (i.e. only the initial seed).
+const seedRunCount = db.prepare("SELECT COUNT(*) as cnt FROM test_runs_v2 WHERE created_by = 'seed'").get().cnt;
+if (seedRunCount === 0) {
+  const suite = db.prepare("SELECT id, name FROM suites WHERE name LIKE '%Login%' LIMIT 1").get();
+  const suiteId   = suite ? suite.id   : 1;
+  const suiteName = suite ? suite.name : 'Login Smoke Tests';
+
+  // Resolve test cases at runtime — never hardcode IDs
+  const getTc = db.prepare('SELECT id, title FROM test_cases WHERE title LIKE ? COLLATE NOCASE LIMIT 1');
+  const specs = [
+    { key: 'tc2',  like: '%invalid password%',    matrix: ['failed','passed','failed','passed','failed'] },
+    { key: 'tc8',  like: '%Valid login%',          matrix: ['passed','failed','passed','failed','passed'] },
+    { key: 'tc3',  like: '%rejects empty fields%', matrix: ['failed','passed','passed','failed','passed'] },
+    { key: 'tc9',  like: '%valid credentials%',    matrix: ['passed','passed','failed','passed','failed'] },
+    { key: 'tc10', like: '%wrong password%',       matrix: ['failed','failed','passed','failed','passed'] },
+    { key: 'tc11', like: '%blocks empty%',         matrix: ['passed','passed','passed','passed','failed'] },
+    { key: 'tc4',  like: '%Update display name%',  matrix: ['passed','passed','passed','passed','passed'] },
+    { key: 'tc5',  like: '%Dashboard loads%',      matrix: ['failed','failed','failed','failed','failed'] },
+  ];
+
+  const tcs = {};
+  for (const s of specs) {
+    const row = getTc.get(s.like);
+    if (row) tcs[s.key] = { id: row.id, title: row.title, matrix: s.matrix };
+  }
+
+  if (Object.keys(tcs).length > 0) {
+    const runDates = [
+      ['2026-06-10 09:00:00', '2026-06-10 09:15:00'],
+      ['2026-06-11 09:00:00', '2026-06-11 09:12:00'],
+      ['2026-06-12 09:00:00', '2026-06-12 09:18:00'],
+      ['2026-06-13 09:00:00', '2026-06-13 09:11:00'],
+      ['2026-06-14 09:00:00', '2026-06-14 09:16:00'],
+    ];
+
+    const insertRun = db.prepare(`
+      INSERT INTO test_runs_v2
+        (suite_id, suite_name, status, pass_count, fail_count, skip_count, start_time, end_time, created_by)
+      VALUES (?, ?, 'completed', ?, ?, 0, ?, ?, 'seed')
+    `);
+    const insertResult = db.prepare(`
+      INSERT INTO test_run_results
+        (run_id, test_case_id, test_case_title, result, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    db.transaction(() => {
+      for (let ri = 0; ri < 5; ri++) {
+        const [start, end] = runDates[ri];
+        let pass = 0, fail = 0;
+        for (const tc of Object.values(tcs)) {
+          if (tc.matrix[ri] === 'passed') pass++;
+          else if (tc.matrix[ri] === 'failed') fail++;
+        }
+        const run = insertRun.run(suiteId, suiteName, pass, fail, start, end);
+        for (const tc of Object.values(tcs)) {
+          insertResult.run(run.lastInsertRowid, tc.id, tc.title, tc.matrix[ri], start, start);
+        }
+      }
+    })();
+  }
+}
+
 module.exports = db;
