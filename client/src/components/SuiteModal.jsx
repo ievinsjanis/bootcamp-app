@@ -34,31 +34,33 @@ export default function SuiteModal({ suite, onClose, onSaved }) {
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal">
+      <div className="modal" role="dialog" aria-labelledby="suite-modal-title">
         <div className="modal-head">
-          <h2>{isEdit ? 'Edit Suite' : 'New Suite'}</h2>
-          <button className="modal-x" onClick={onClose}>✕</button>
+          <h2 id="suite-modal-title">{isEdit ? 'Edit Suite' : 'New Suite'}</h2>
+          <button className="modal-x" onClick={onClose} aria-label="Close dialog">✕</button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
             <label>
-              <span>Name <em className="req">*</em></span>
+              <span>Name <em className="req" aria-hidden="true">*</em></span>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => set('name', e.target.value)}
                 placeholder="Login Smoke Tests"
+                aria-required="true"
               />
             </label>
 
             <label>
-              <span>Feature <em className="req">*</em></span>
+              <span>Feature <em className="req" aria-hidden="true">*</em></span>
               <input
                 type="text"
                 value={form.feature}
                 onChange={e => set('feature', e.target.value)}
                 placeholder="Login"
+                aria-required="true"
               />
             </label>
 
@@ -69,7 +71,7 @@ export default function SuiteModal({ suite, onClose, onSaved }) {
               </select>
             </label>
 
-            {error && <p className="modal-err">{error}</p>}
+            {error && <p className="modal-err" role="alert">{error}</p>}
           </div>
 
           <div className="modal-foot">

@@ -51,21 +51,22 @@ export default function TestCaseModal({ tc, onClose, onSaved }) {
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal">
+      <div className="modal" role="dialog" aria-labelledby="tc-modal-title">
         <div className="modal-head">
-          <h2>{isEdit ? 'Edit Test Case' : 'New Test Case'}</h2>
-          <button className="modal-x" onClick={onClose}>✕</button>
+          <h2 id="tc-modal-title">{isEdit ? 'Edit Test Case' : 'New Test Case'}</h2>
+          <button className="modal-x" onClick={onClose} aria-label="Close dialog">✕</button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
             <label>
-              <span>Title <em className="req">*</em></span>
+              <span>Title <em className="req" aria-hidden="true">*</em></span>
               <input
                 type="text"
                 value={form.title}
                 onChange={e => set('title', e.target.value)}
                 placeholder="[FeatureArea] what is being tested"
+                aria-required="true"
               />
             </label>
 
@@ -80,29 +81,31 @@ export default function TestCaseModal({ tc, onClose, onSaved }) {
             </label>
 
             <label>
-              <span>Steps <em className="req">*</em> <em className="opt">— one per line</em></span>
+              <span>Steps <em className="req" aria-hidden="true">*</em> <em className="opt">— one per line</em></span>
               <textarea
                 value={form.steps}
                 onChange={e => set('steps', e.target.value)}
                 placeholder={"Go to the login page.\nEnter a valid username.\nClick the login button."}
                 rows={4}
+                aria-required="true"
               />
             </label>
 
             <label>
-              <span>Expected result <em className="req">*</em></span>
+              <span>Expected result <em className="req" aria-hidden="true">*</em></span>
               <textarea
                 value={form.expected_result}
                 onChange={e => set('expected_result', e.target.value)}
                 placeholder="What should happen"
                 rows={2}
+                aria-required="true"
               />
             </label>
 
             <div className="modal-row">
               <label>
-                <span>Severity <em className="req">*</em></span>
-                <select value={form.severity} onChange={e => set('severity', e.target.value)}>
+                <span>Severity <em className="req" aria-hidden="true">*</em></span>
+                <select value={form.severity} onChange={e => set('severity', e.target.value)} aria-required="true">
                   {SEVERITIES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </label>
@@ -114,7 +117,7 @@ export default function TestCaseModal({ tc, onClose, onSaved }) {
               </label>
             </div>
 
-            {error && <p className="modal-err">{error}</p>}
+            {error && <p className="modal-err" role="alert">{error}</p>}
           </div>
 
           <div className="modal-foot">

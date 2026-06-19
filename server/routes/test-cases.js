@@ -4,6 +4,25 @@ const db = require('../db');
 
 const severityOrder = `CASE severity WHEN 'Critical' THEN 1 WHEN 'Major' THEN 2 WHEN 'Minor' THEN 3 WHEN 'Trivial' THEN 4 END`;
 
+// ── CSV helpers ───────────────────────────────────────────
+
+function csvField(value) {
+  if (value == null) return '';
+  const s = String(value);
+  if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function stepsToText(json) {
+  if (!json) return '';
+  try {
+    const arr = JSON.parse(json);
+    return Array.isArray(arr) ? arr.join('\n') : json;
+  } catch { return json; }
+}
+
 function handleListTestCases(req, res) {
   try {
     const { status, search, sort = 'updated_at', order = 'desc', page = '1' } = req.query;
@@ -99,6 +118,45 @@ function handleDeleteTestCase(req, res) {
   }
 }
 
+function handleExportTestCases(req, res) {
+  try {
+    const { status, search, sort = 'updated_at', order = 'desc' } = req.query;
+    const params = [];
+    let where = 'WHERE 1=1';
+    if (status) { where += ' AND status = ?'; params.push(status); }
+    if (search) { where += ' AND title LIKE ?'; params.push(`%${search}%`); }
+
+    const orderSql = sort === 'severity'
+      ? `ORDER BY ${severityOrder} ${order === 'desc' ? 'DESC' : 'ASC'}`
+      : `ORDER BY updated_at ${order === 'desc' ? 'DESC' : 'ASC'}`;
+
+    const rows = db.prepare(`SELECT * FROM test_cases ${where} ${orderSql}`).all(...params);
+
+    const HEADERS = ['title', 'preconditions', 'steps', 'expected_result', 'severity', 'status', 'created_at', 'updated_at'];
+    const lines   = [HEADERS.join(',')];
+
+    for (const r of rows) {
+      lines.push([
+        csvField(r.title),
+        csvField(r.preconditions),
+        csvField(stepsToText(r.steps)),
+        csvField(r.expected_result),
+        csvField(r.severity),
+        csvField(r.status),
+        csvField(r.created_at),
+        csvField(r.updated_at),
+      ].join(','));
+    }
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="test-cases-sample.csv"');
+    res.send(lines.join('\r\n'));
+  } catch (err) {
+    res.status(500).json({ success: false, data: null, error: err.message });
+  }
+}
+
+router.get('/export', handleExportTestCases);
 router.get('/',     handleListTestCases);
 router.get('/:id',  handleGetTestCase);
 router.post('/',    handleCreateTestCase);

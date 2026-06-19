@@ -1,0 +1,14 @@
+title,severity,steps,expected_result,preconditions,status
+[Login] Login with valid credentials,Critical,"Go to the login page;Enter a valid email;Enter the correct password;Click Login",User is redirected to the dashboard,,ready
+[Login] Login with wrong password,Critical,"Go to the login page;Enter a valid email;Enter an incorrect password;Click Login",An error message appears and the user stays on the login page,,draft
+[Login] Login form blocks empty submission,Major,Click the Login button without filling in any fields,Validation errors appear on both fields. The form does not submit,,draft
+[Signup] Register with a new email,Critical,"Go to the signup page;Enter a valid unused email;Enter a password of 10 characters;Click Sign up",Account is created and user is redirected to onboarding,,draft
+[Signup] Register with an existing email,Major,"Go to the signup page;Enter an email that already has an account;Enter any password;Click Sign up",An error message states the email is already in use,,draft
+[Profile] Update display name,Minor,"Log in;Go to Profile settings;Clear the display name field;Enter a new name;Click Save",The new display name appears across the app,User is logged in,ready
+[Profile] Upload a valid avatar image,Minor,"Log in;Go to Profile settings;Click the avatar upload button;Choose a JPEG file under 2 MB;Click Save",The new avatar is shown on the profile page,User is logged in,draft
+[Dashboard] Dashboard loads after login,Major,"Log in with valid credentials;Wait for the page to fully load",The dashboard displays metric cards and recent activity,User has at least one previous session,draft
+[Checkout] Complete purchase with valid card,Critical,"Add an item to the cart;Go to checkout;Enter valid card details;Click Pay",Order confirmation screen appears and a receipt email is sent,User is logged in and cart has at least one item,ready
+[Checkout] Decline invalid card,Major,"Add an item to the cart;Go to checkout;Enter an invalid card number;Click Pay",A payment failure message is shown and the order is not placed,User is logged in and cart has at least one item,draft
+bad row missing severity,,Click something,Something happens,,draft
+[Login] This row has a bad status value,Minor,"Step one;Step two",Expected result,,notavalidstatus
+,Critical,"Step one;Step two",Expected result,,draft
