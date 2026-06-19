@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import './TestRunDetailPage.css';
 
-const STATUS_STYLES = {
-  running:   { background: '#dbeafe', color: '#1e40af' },
-  completed: { background: '#dcfce7', color: '#166534' },
-  aborted:   { background: '#fee2e2', color: '#991b1b' },
-};
-
 function formatDate(str) {
   if (!str) return '—';
   return new Date(str + 'Z').toLocaleString('en-GB', {
@@ -22,9 +16,7 @@ export default function TestRunDetailPage() {
   const [run, setRun]             = useState(null);
   const [loading, setLoading]     = useState(true);
   const [fetchError, setFetchError] = useState('');
-  // per-result local notes { [resultId]: string }
   const [notes, setNotes]         = useState({});
-  // per-result saving/error state
   const [saving, setSaving]       = useState({});
   const [rowErrors, setRowErrors] = useState({});
   const [genBusy, setGenBusy]     = useState(false);
@@ -129,20 +121,49 @@ export default function TestRunDetailPage() {
     }
   }
 
-  if (loading)    return <div className="trdp"><p className="trdp-loading">Loading…</p></div>;
-  if (fetchError) return <div className="trdp"><p className="trdp-loading">{fetchError}</p></div>;
+  if (loading) return (
+    <div className="trdp">
+      <div className="skel skel--text" style={{ width: '8rem', marginBottom: 'var(--sp-6)' }} />
+      <div className="trdp-header">
+        <div className="trdp-title-row">
+          <div className="skel skel--num" style={{ width: '22rem' }} />
+        </div>
+        <div className="trdp-meta" style={{ marginTop: 'var(--sp-3)' }}>
+          <div className="skel skel--text" style={{ width: '14rem' }} />
+        </div>
+      </div>
+      <div className="trdp-summary">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="trdp-pill trdp-total-pill">
+            <div className="skel skel--num" style={{ width: '2rem' }} />
+            <div className="skel skel--label" style={{ width: '3.5rem', marginTop: '0.3rem' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (fetchError) return (
+    <div className="trdp">
+      <Link to="/test-runs" className="detail-back">← Test Runs</Link>
+      <div className="error-banner--page">
+        <p>{fetchError}</p>
+        <button className="btn-primary" onClick={fetchRun}>Retry</button>
+      </div>
+    </div>
+  );
 
   const total = run.results.length;
   const pct   = total === 0 ? 0 : Math.round(((run.pass_count + run.skip_count) / total) * 100);
 
   return (
     <div className="trdp">
-      <Link to="/test-runs" className="trdp-back">← Test Runs</Link>
+      <Link to="/test-runs" className="detail-back">← Test Runs</Link>
 
       <div className="trdp-header">
         <div className="trdp-title-row">
-          <h1>Run #{run.id} — {run.suite_name}</h1>
-          <span className="badge" style={STATUS_STYLES[run.status]}>{run.status}</span>
+          <h1 className="detail-title">Run #{run.id} — {run.suite_name}</h1>
+          <span className={`badge badge--${run.status}`}>{run.status}</span>
         </div>
         <div className="trdp-meta">
           <span>Started {formatDate(run.start_time)}</span>
@@ -180,8 +201,8 @@ export default function TestRunDetailPage() {
         </div>
       )}
 
-      <div className="trdp-table-wrap">
-        <table className="trdp-table">
+      <div className="table-wrap trdp-table-margin">
+        <table className="data-table trdp-table">
           <thead>
             <tr>
               <th>Test Case</th>
