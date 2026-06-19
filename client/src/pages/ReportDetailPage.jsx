@@ -10,12 +10,6 @@ function formatDate(str) {
   });
 }
 
-const RESULT_STYLES = {
-  passed:  { background: '#dcfce7', color: '#166534' },
-  failed:  { background: '#fee2e2', color: '#991b1b' },
-  skipped: { background: '#f1f5f9', color: '#475569' },
-};
-
 const ROW_CLASS = {
   passed:  'rdp-row-passed',
   failed:  'rdp-row-failed',
@@ -24,34 +18,59 @@ const ROW_CLASS = {
 
 export default function ReportDetailPage() {
   const { id } = useParams();
-  const [report, setReport]   = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [report, setReport]     = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
-  useEffect(() => {
+  function fetchReport() {
+    setLoading(true);
+    setFetchError('');
     fetch(`/api/reports/${id}`)
       .then(r => r.json())
       .then(json => {
         if (json.success) setReport(json.data);
-        else setError(json.error || 'Failed to load report.');
+        else setFetchError(json.error || 'Failed to load report.');
       })
-      .catch(() => setError('Could not reach the server.'))
+      .catch(() => setFetchError('Could not reach the server.'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }
 
-  if (loading) return <div className="rdp"><p className="rdp-status">Loading…</p></div>;
-  if (error)   return <div className="rdp"><p className="rdp-status rdp-error">{error}</p></div>;
+  useEffect(() => { fetchReport(); }, [id]);
+
+  if (loading) return (
+    <div className="rdp">
+      <div className="skel skel--text" style={{ width: '6rem', marginBottom: 'var(--sp-6)' }} />
+      <div className="rdp-header">
+        <div className="rdp-title-row">
+          <div className="skel skel--num" style={{ width: '22rem' }} />
+        </div>
+        <div className="rdp-meta" style={{ marginTop: 'var(--sp-3)' }}>
+          <div className="skel skel--text" style={{ width: '16rem' }} />
+        </div>
+      </div>
+    </div>
+  );
+
+  if (fetchError) return (
+    <div className="rdp">
+      <Link to="/reports" className="detail-back">← Reports</Link>
+      <div className="error-banner--page">
+        <p>{fetchError}</p>
+        <button className="btn-primary" onClick={fetchReport}>Retry</button>
+      </div>
+    </div>
+  );
 
   const { passed_count, failed_count, skipped_count, total_count } = report;
   const passRate = total_count > 0 ? Math.round((passed_count / total_count) * 100) : 0;
 
   return (
     <div className="rdp">
-      <Link to="/reports" className="rdp-back">← Reports</Link>
+      <Link to="/reports" className="detail-back">← Reports</Link>
 
       <div className="rdp-header">
         <div className="rdp-title-row">
-          <h1>Report #{report.id} — {report.suite_name}</h1>
+          <h1 className="detail-title">Report #{report.id} — {report.suite_name}</h1>
         </div>
         <div className="rdp-meta">
           <span>Run <Link to={`/test-runs/${report.run_id}`} className="rdp-run-link">#{report.run_id}</Link></span>
@@ -60,7 +79,6 @@ export default function ReportDetailPage() {
         </div>
       </div>
 
-      {/* Summary pills */}
       <div className="rdp-summary">
         <div className="rdp-pill rdp-pass-pill">
           <span className="rdp-pill-num">{passed_count}</span>
@@ -84,14 +102,12 @@ export default function ReportDetailPage() {
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="rdp-progress-bar">
         <div className="rdp-progress-fill" style={{ width: `${passRate}%` }} />
       </div>
 
-      {/* Results table */}
-      <div className="rdp-table-wrap">
-        <table className="rdp-table">
+      <div className="table-wrap rdp-table-margin">
+        <table className="data-table rdp-table">
           <thead>
             <tr>
               <th>Test Case</th>
@@ -105,10 +121,7 @@ export default function ReportDetailPage() {
               <tr key={r.id} className={ROW_CLASS[r.result] ?? ''}>
                 <td className="rdp-tc-title">{r.test_case_title}</td>
                 <td>
-                  <span
-                    className="rdp-badge"
-                    style={RESULT_STYLES[r.result] ?? { background: '#f3f4f6', color: '#9ca3af' }}
-                  >
+                  <span className={`badge badge--${r.result ?? 'not-run'}`}>
                     {r.result ?? 'not run'}
                   </span>
                 </td>
@@ -125,7 +138,6 @@ export default function ReportDetailPage() {
         </table>
       </div>
 
-      {/* Actions */}
       <div className="rdp-actions">
         <a
           href={`/api/reports/${report.id}/export/html`}

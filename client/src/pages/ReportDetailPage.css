@@ -1,56 +1,45 @@
 .rdp {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: var(--sp-8) var(--sp-6);
 }
 
-.rdp-back {
-  display: inline-block;
-  color: #6b7280;
-  text-decoration: none;
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
+@media (max-width: 600px) {
+  .rdp { padding: var(--sp-6) var(--sp-4); }
 }
-.rdp-back:hover { color: #1a1a2e; }
 
-.rdp-status { color: #9ca3af; padding: 2rem 0; font-size: 0.9rem; }
-.rdp-error  { color: #dc2626; }
-
-/* ── Header */
+/* detail-back and detail-title come from shared.css */
 
 .rdp-header {
   margin-bottom: 1.25rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--c-border);
 }
 
-.rdp-title-row h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
+.rdp-title-row { margin-bottom: var(--sp-2); }
 
 .rdp-meta {
   display: flex;
   gap: 1.25rem;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--c-text-muted);
   flex-wrap: wrap;
 }
 
 .rdp-run-link {
-  color: #1d4ed8;
+  color: var(--c-accent-text);
   text-decoration: none;
   font-weight: 600;
 }
+
 .rdp-run-link:hover { text-decoration: underline; }
 
-/* ── Summary pills */
+/* ── Summary pills ───────────────────────────────────────────── */
 
 .rdp-summary {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--sp-4);
   flex-wrap: wrap;
 }
 
@@ -59,7 +48,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0.6rem 1.1rem;
-  border-radius: 8px;
+  border-radius: var(--r-lg);
   border: 1px solid transparent;
   min-width: 70px;
 }
@@ -67,95 +56,59 @@
 .rdp-pill-num   { font-size: 1.4rem; font-weight: 700; line-height: 1; }
 .rdp-pill-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
 
-.rdp-pass-pill  { background: #dcfce7; border-color: #bbf7d0; color: #166534; }
-.rdp-fail-pill  { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
-.rdp-skip-pill  { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
-.rdp-total-pill { background: #f8fafc; border-color: #e2e8f0; color: #1a1a2e; }
-.rdp-rate-pill  { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.rdp-pass-pill  { background: var(--c-success-subtle); border-color: var(--c-success-border); color: var(--c-success-text); }
+.rdp-fail-pill  { background: var(--c-danger-subtle);  border-color: var(--c-danger-border);  color: var(--c-danger-text);  }
+.rdp-skip-pill  { background: var(--c-surface-2);      border-color: var(--c-border);         color: var(--c-text-muted);   }
+.rdp-total-pill { background: var(--c-surface-2);      border-color: var(--c-border);         color: var(--c-text);         }
+.rdp-rate-pill  { background: var(--c-accent-subtle);  border-color: var(--c-accent-border);  color: var(--c-accent-text);  }
 
-/* ── Progress bar */
+/* ── Progress bar ────────────────────────────────────────────── */
 
 .rdp-progress-bar {
   height: 4px;
-  background: #e5e7eb;
+  background: var(--c-border);
   border-radius: 2px;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-6);
   overflow: hidden;
 }
 
 .rdp-progress-fill {
   height: 100%;
-  background: #166534;
+  background: var(--c-success);
   border-radius: 2px;
   transition: width 0.3s ease;
   min-width: 0;
 }
 
-/* ── Table */
+/* ── Table ───────────────────────────────────────────────────── */
 
-.rdp-table-wrap {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  margin-bottom: 1.5rem;
-}
+/* table-wrap and data-table come from shared.css */
 
-.rdp-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
-.rdp-table thead { background: #f9fafb; }
-
-.rdp-table th {
-  padding: 0.7rem 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.rdp-table td {
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-  color: #374151;
-}
-
-.rdp-table tr:last-child td { border-bottom: none; }
+.rdp-table-margin { margin-bottom: var(--sp-6); }
 
 .rdp-th-result { width: 100px; }
 .rdp-th-notes  { width: 260px; }
 .rdp-th-issue  { width: 70px;  }
 
-.rdp-tc-title { font-weight: 500; }
+.rdp-tc-title { font-weight: 500; color: var(--c-text); }
 
-.rdp-row-passed  td { background: #f0fdf4; }
-.rdp-row-failed  td { background: #fff8f8; }
-.rdp-row-skipped td { background: #f8fafc; }
+/* Row status coloring — higher specificity than data-table hover */
+.rdp-table .rdp-row-passed  td { background: var(--c-row-pass); }
+.rdp-table .rdp-row-failed  td { background: var(--c-row-fail); }
+.rdp-table .rdp-row-skipped td { background: var(--c-row-skip); }
 
-.rdp-badge {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.rdp-notes    { font-size: 0.85rem; color: #374151; }
-.rdp-muted    { color: #9ca3af; }
+.rdp-notes { font-size: 0.85rem; color: var(--c-text-2); }
+.rdp-muted { color: var(--c-text-ghost); }
 
 .rdp-issue-link {
   font-size: 0.8rem;
-  color: #1d4ed8;
+  color: var(--c-accent-text);
   text-decoration: none;
 }
+
 .rdp-issue-link:hover { text-decoration: underline; }
 
-/* ── Actions footer */
+/* ── Actions ─────────────────────────────────────────────────── */
 
 .rdp-actions {
   display: flex;
@@ -165,29 +118,28 @@
 }
 
 .rdp-action-btn {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   text-decoration: none;
 }
 
-/* ── Print: hide nav + actions, full-width layout */
+/* ── Print ───────────────────────────────────────────────────── */
 
 @media print {
   .rdp-back,
   .rdp-actions,
-  nav {
-    display: none !important;
-  }
-  .rdp {
-    max-width: none;
-    padding: 0;
-  }
-  .rdp-row-passed  td { background: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .rdp-row-failed  td { background: #fff8f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .rdp-row-skipped td { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .rdp-badge, .rdp-pill, .rdp-progress-fill {
+  nav { display: none !important; }
+
+  .rdp { max-width: none; padding: 0; }
+
+  .rdp-table .rdp-row-passed  td { background: var(--c-row-pass) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rdp-table .rdp-row-failed  td { background: var(--c-row-fail) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rdp-table .rdp-row-skipped td { background: var(--c-row-skip) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .badge, .rdp-pill, .rdp-progress-fill {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .rdp-progress-fill { background: #166534 !important; }
+
+  .rdp-progress-fill { background: var(--c-success) !important; }
   tr { page-break-inside: avoid; }
 }
