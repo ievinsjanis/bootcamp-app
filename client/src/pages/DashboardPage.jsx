@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardCharts from './DashboardCharts';
 import './DashboardPage.css';
 
 const REFRESH_MS = 30_000;
@@ -33,19 +34,14 @@ function formatActivity(item) {
   return `${ref} updated`;
 }
 
-const RUN_STATUS_STYLE = {
-  running:   { background: '#dbeafe', color: '#1e40af' },
-  completed: { background: '#dcfce7', color: '#166534' },
-  aborted:   { background: '#fee2e2', color: '#991b1b' },
-};
 
 // ── Skeleton ──────────────────────────────────────────────
 
 function SkeletonCard() {
   return (
-    <div className="db-metric-card db-skeleton-card">
-      <div className="db-skel db-skel-num" />
-      <div className="db-skel db-skel-label" />
+    <div className="metric-card db-skeleton-card">
+      <div className="skel skel--num" />
+      <div className="skel skel--label" />
     </div>
   );
 }
@@ -54,7 +50,7 @@ function SkeletonRow({ cols }) {
   return (
     <tr>
       {Array.from({ length: cols }).map((_, i) => (
-        <td key={i}><div className="db-skel db-skel-text" /></td>
+        <td key={i}><div className="skel skel--text" /></td>
       ))}
     </tr>
   );
@@ -77,6 +73,17 @@ export default function DashboardPage() {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
+  const [trends, setTrends]   = useState(null);
+
+  const fetchTrends = useCallback(async () => {
+    try {
+      const res  = await fetch('/api/dashboard/trends');
+      const json = await res.json();
+      if (json.success) setTrends(json.data);
+    } catch {
+      // charts failing silently — rest of dashboard stays usable
+    }
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -97,24 +104,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData();
-    const timer = setInterval(fetchData, REFRESH_MS);
+    fetchTrends();
+    const timer = setInterval(() => { fetchData(); fetchTrends(); }, REFRESH_MS);
     return () => clearInterval(timer);
-  }, [fetchData]);
+  }, [fetchData, fetchTrends]);
 
   // ── Loading skeleton
   if (loading) {
     return (
       <div className="db">
         <div className="db-header">
-          <h1 className="db-title">Dashboard</h1>
+          <h1 className="page-title">Dashboard</h1>
         </div>
-        <div className="db-metrics-grid">
+        <div className="metric-grid">
           {[0, 1, 2, 3].map(i => <SkeletonCard key={i} />)}
         </div>
         <div className="db-section">
           <h2 className="db-section-title">Recent Test Runs</h2>
-          <div className="db-table-wrap">
-            <table className="db-table">
+          <div className="table-wrap">
+            <table className="data-table">
               <tbody>{[0, 1, 2].map(i => <SkeletonRow key={i} cols={5} />)}</tbody>
             </table>
           </div>
@@ -125,7 +133,7 @@ export default function DashboardPage() {
             {[0, 1, 2].map(i => (
               <li key={i} className="db-activity-item">
                 <span className="db-activity-dot" />
-                <div className="db-skel db-skel-activity" />
+                <div className="skel skel--wide" />
               </li>
             ))}
           </ul>
@@ -139,10 +147,10 @@ export default function DashboardPage() {
     return (
       <div className="db">
         <div className="db-header">
-          <h1 className="db-title">Dashboard</h1>
+          <h1 className="page-title">Dashboard</h1>
         </div>
-        <div className="db-error">
-          <p className="db-error-msg">{error}</p>
+        <div className="error-banner--page">
+          <p>{error}</p>
           <button className="btn-primary" onClick={fetchData}>Retry</button>
         </div>
       </div>
@@ -162,19 +170,19 @@ export default function DashboardPage() {
         <div className="db-header">
           <h1 className="db-title">Dashboard</h1>
         </div>
-        <div className="db-empty-page">
-          <p className="db-empty-page-heading">Nothing here yet.</p>
-          <p className="db-empty-page-body">
+        <div className="empty-state">
+          <p className="empty-state__heading">Nothing here yet.</p>
+          <p className="empty-state__body">
             Start by creating{' '}
             <Link to="/test-cases">test cases</Link>, group them into a{' '}
             <Link to="/test-suites">test suite</Link>, then run the suite to
             see results here.
           </p>
-          <p className="db-empty-page-body">
+          <p className="empty-state__body">
             You can also <Link to="/bugs">file bugs</Link> as you find them —
             they'll show up in the activity feed.
           </p>
-          <div className="db-empty-page-actions">
+          <div className="empty-state__actions">
             <Link to="/test-cases" className="btn-primary">Create a test case</Link>
             <Link to="/bugs" className="btn-secondary">File a bug</Link>
           </div>
@@ -227,27 +235,35 @@ export default function DashboardPage() {
   return (
     <div className="db">
       <div className="db-header">
-        <h1 className="db-title">Dashboard</h1>
+        <h1 className="page-title">Dashboard</h1>
         <span className="db-refresh-note">auto-refreshes every 30 s</span>
       </div>
 
       {/* ── Metric cards */}
-      <div className="db-metrics-grid">
+      <div className="metric-grid">
         {metricCards.map(card => (
           <Link
             key={card.label}
             to={card.link}
             className={[
-              'db-metric-card',
+              'metric-card db-metric-card',
               card.urgent ? 'db-metric-urgent' : '',
               card.dim    ? 'db-metric-dim'    : '',
             ].filter(Boolean).join(' ')}
           >
-            <span className="db-metric-value">{card.value}</span>
-            <span className="db-metric-label">{card.label}</span>
-            {card.sub && <span className="db-metric-sub">{card.sub}</span>}
+            <span className="metric-value">{card.value}</span>
+            <span className="metric-label">{card.label}</span>
+            {card.sub && <span className="metric-sub">{card.sub}</span>}
           </Link>
         ))}
+      </div>
+
+      {/* ── Charts */}
+      <div className="db-section">
+        <div className="db-section-header">
+          <h2 className="db-section-title">Trends &amp; Coverage</h2>
+        </div>
+        <DashboardCharts trends={trends} />
       </div>
 
       {/* ── Recent test runs */}
@@ -267,8 +283,8 @@ export default function DashboardPage() {
             }
           />
         ) : (
-          <div className="db-table-wrap">
-            <table className="db-table">
+          <div className="table-wrap">
+            <table className="data-table">
               <thead>
                 <tr>
                   <th>#</th>
@@ -288,7 +304,7 @@ export default function DashboardPage() {
                     </td>
                     <td>{run.suite_name}</td>
                     <td>
-                      <span className="db-badge" style={RUN_STATUS_STYLE[run.status]}>
+                      <span className={`badge badge--${run.status}`}>
                         {run.status}
                       </span>
                     </td>
